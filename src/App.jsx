@@ -7,8 +7,8 @@ import AdditionalInfo from "./components/AdditionalInfo";
 import Temperature from "./components/Temperature";
 import axios from "axios";
 
+const API_KEY = process.env.API_KEY;
 function App() {
-    const API_KEY = process.env.API_KEY;
     const [currWeather, setCurrWeather] = useState([]);
     const [forecastData, setForecastData] = useState([]);
     const [loading, setLoading] = useState(true);
