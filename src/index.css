@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.bt-custom {
+    border-top: 1px solid black;
+}
+
+.temp-size {
+    font-size: 8rem;
+}
+
+.temp-size-big {
+    font-size: 10rem;
+}
+
+body {
+    font-family: Montserrat;
+}
