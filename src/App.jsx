@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import { useState, createContext, useContext } from "react";
 import Navbar from "./components/Navbar";
 import WeatherPos from "./components/WeatherPos";
 import HourlyForecast from "./components/HourlyForecast";
@@ -8,10 +7,15 @@ import Temperature from "./components/Temperature";
 import axios from "axios";
 
 const API_KEY = process.env.API_KEY;
+
+export const ThemeContext = createContext(null);
 function App() {
+    const [active, setActive] = useState(false);
     const [currWeather, setCurrWeather] = useState([]);
     const [forecastData, setForecastData] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    // const mainTheme = useContext(ThemeContext);
 
     function handleLocationSearch(locationName) {
         axios({
@@ -50,44 +54,57 @@ function App() {
         return `${getMonth()} ${currDate.getDate()}, ${currDate.getFullYear()}`;
     }
 
+    function toggleActive() {
+        setActive(!active);
+    }
+
     return (
-        <div className=" h-screen w-screen flex flex-col justify-between">
-            <Navbar handleLocationSearch={handleLocationSearch} />
-            {!loading && (
-                <>
-                    {/* shows city name, current date, and current weather status with a default image for the city */}
-                    <WeatherPos
-                        cityName={currWeather.city_name}
-                        // the weekday changes its format when it crosses the sm breakpoint, Monday -> Mon
-                        getCurrDate={getCurrDate}
-                        weatherStatus={
-                            currWeather.todayData.weather.description
-                        }
-                    />
+        <ThemeContext.Provider value={!active ? "dark" : "light"}>
+            <div
+                className={`h-screen w-screen flex flex-col justify-between ${
+                    active ? "light" : "dark"
+                }`}
+            >
+                <Navbar
+                    handleLocationSearch={handleLocationSearch}
+                    toggleActive={toggleActive}
+                />
+                {!loading && (
+                    <>
+                        {/* shows city name, current date, and current weather status with a default image for the city */}
+                        <WeatherPos
+                            cityName={currWeather.city_name}
+                            // the weekday changes its format when it crosses the sm breakpoint, Monday -> Mon
+                            getCurrDate={getCurrDate}
+                            weatherStatus={
+                                currWeather.todayData.weather.description
+                            }
+                        />
 
-                    {/* displays current weather hourly forecast for the specified region */}
-                    <HourlyForecast
-                        forecastData={forecastData}
-                        // codesUrl={weatherCodesUrl}
-                    />
+                        {/* displays current weather hourly forecast for the specified region */}
+                        <HourlyForecast
+                            forecastData={forecastData}
+                            // codesUrl={weatherCodesUrl}
+                        />
 
-                    {/* includes data for precipitation, humidity and wind-speed */}
-                    <AdditionalInfo
-                        precipitation={currWeather.todayData.pop}
-                        humidity={currWeather.todayData.rh}
-                        windSpeed={currWeather.todayData.wind_spd}
-                    />
+                        {/* includes data for precipitation, humidity and wind-speed */}
+                        <AdditionalInfo
+                            precipitation={currWeather.todayData.pop}
+                            humidity={currWeather.todayData.rh}
+                            windSpeed={currWeather.todayData.wind_spd}
+                        />
 
-                    {/* displays the current day temperature in large font weight.
+                        {/* displays the current day temperature in large font weight.
             Can be switched to specific weekdays later by a button on the right.
              */}
 
-                    <Temperature
-                        temperature={currWeather.todayData.high_temp}
-                    />
-                </>
-            )}
-        </div>
+                        <Temperature
+                            temperature={currWeather.todayData.high_temp}
+                        />
+                    </>
+                )}
+            </div>
+        </ThemeContext.Provider>
     );
 }
 
